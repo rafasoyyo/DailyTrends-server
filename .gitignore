@@ -23,7 +23,7 @@ coverage
 build/Release
 
 # Dependency directory
-# https://docs.npmjs.com/cli/shrinkwrap#caveats
+docs
 node_modules
 
 # Debug log from npm

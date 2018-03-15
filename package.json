@@ -3,7 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "set NODE_ENV=production&& node ./bin/www",
+    "startdev": "set NODE_ENV=development&& nodemon -e js,jade,html --inspect ./bin/www",
+    "docs": "node_modules/.bin/jsdoc -c jsDoc.json",
+    "test": "standard && set NODE_ENV=test&& node ./bin/www | mocha ./tests/tests"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
@@ -11,7 +14,22 @@
     "debug": "~2.6.9",
     "express": "~4.15.5",
     "jade": "~1.11.0",
+    "mongoose": "^5.0.10",
     "morgan": "~1.9.0",
     "serve-favicon": "~2.4.5"
+  },
+  "devDependencies": {
+    "docdash2": "^0.4.0",
+    "jsdoc": "^3.5.5",
+    "jsdoc-route-plugin": "^0.1.0",
+    "mocha": "^5.0.4",
+    "standard": "^11.0.1",
+    "supertest": "^3.0.0"
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "it"
+    ]
   }
 }
