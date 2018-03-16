@@ -8,10 +8,19 @@ var mongoose = require('mongoose')
 
 var app = express()
 
-var config = require('./config')
+/**
+ * Get config
+ */
+var env = (process.env.NODE_ENV || 'development').trim()
+var config = require('./config')[env]
+
+/**
+ * Create database connection
+ */
 mongoose.connect(config.mongoDB)
-  .then(function (res) { console.log('Mongoose database running') })
-  .catch(function (err) { console.error('Connection error: ', err) })
+var db = mongoose.connection
+db.on('error', console.error.bind(console, 'connection error:'))
+db.once('open', function (res) { console.log(res, config.mongoDB); console.log('Mongoose database running') })
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
