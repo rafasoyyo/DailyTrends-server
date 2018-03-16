@@ -32,8 +32,7 @@ router.get('/', function (req, res, next) {
  */
 router.post('/', function (req, res, next) {
   Feeds
-    .create(req.body)
-    .exec(function (err, feedsCreated) {
+    .create(req.body, function (err, feedsCreated) {
       if (err) return res.status(400).send(err.toString())
       res.status(201).send(feedsCreated)
     })
@@ -44,7 +43,7 @@ router.post('/', function (req, res, next) {
  * @method GET/:Id
  * @return {Object} Feed found
  */
-router.get('/feedId', function (req, res, next) {
+router.get('/:feedId', function (req, res, next) {
   Feeds
     .findById(req.params.feedId)
     .exec(function (err, feedFound) {
@@ -58,12 +57,12 @@ router.get('/feedId', function (req, res, next) {
  * @method PUT/:Id
  * @return {Object} Feed updated
  */
-router.put('/feedId', function (req, res, next) {
+router.put('/:feedId', function (req, res, next) {
   Feeds
     .findByIdAndUpdate(req.params.feedId, req.body)
     .exec(function (err, feedUpdated) {
       if (err) return res.status(400).send(err.toString())
-      res.send(feedUpdated)
+      res.status(202).send(feedUpdated)
     })
 })
 
@@ -72,7 +71,7 @@ router.put('/feedId', function (req, res, next) {
  * @method DELETE/:Id
  * @return {Object} Feed deleted
  */
-router.delete('/feedId', function (req, res, next) {
+router.delete('/:feedId', function (req, res, next) {
   Feeds
     .findByIdAndRemove(req.params.feedId)
     .exec(function (err, feedDeleted) {

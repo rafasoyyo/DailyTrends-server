@@ -1,10 +1,11 @@
+/* global it, describe */
 
 var request = require('supertest')
 var app = require('../app')
 
 // Test index.html
 describe('Test index.html page', function () {
-  it('GET / should return html', function (done) {
+  it('GET - should return html', function (done) {
     request(app)
       .get('/')
       .expect(200)
