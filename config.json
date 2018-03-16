@@ -1,3 +1,11 @@
 {
-    "mongoDB" : "mongodb://localhost/feeds"
+    "development" :{
+        "mongoDB" : "mongodb://localhost/feedsdev"
+    },
+    "test" :{
+        "mongoDB" : "mongodb://localhost/feedstest"
+    },
+    "production" :{
+        "mongoDB" : "mongodb://localhost/feeds"
+    }
 }

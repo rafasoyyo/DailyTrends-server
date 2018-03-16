@@ -1,12 +1,11 @@
 {
   "name": "dailytrends-server",
   "version": "0.0.0",
-  "private": true,
   "scripts": {
-    "start": "set NODE_ENV=production&& node ./bin/www",
-    "startdev": "set NODE_ENV=development&& nodemon -e js,jade,html --inspect ./bin/www",
+    "start": "set NODE_ENV=production && node ./bin/www",
+    "startdev": "set NODE_ENV=development && nodemon -e js,jade,html --inspect ./bin/www",
     "docs": "node_modules/.bin/jsdoc -c jsDoc.json",
-    "test": "standard && set NODE_ENV=test&& node ./bin/www | mocha ./tests/tests"
+    "test": "standard && set NODE_ENV=test && node ./bin/www | mocha ./tests/tests"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
@@ -27,9 +26,6 @@
     "supertest": "^3.0.0"
   },
   "standard": {
-    "globals": [
-      "describe",
-      "it"
-    ]
+    "globals": [ "describe", "it" ]
   }
 }
