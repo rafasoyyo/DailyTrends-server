@@ -2,24 +2,28 @@
 /**
  * Feed Scraper
  * @module Services/scraper
+ * @requires async
  * @requires cheerio
  * @requires request
- * @requires async
+ * @requires universalify
  */
+var async = require('async')
 var cheerio = require('cheerio')
 var request = require('superagent')
-var async = require('async')
-
-var Feeds = require('../models/models').feed
+var universalify = require('universalify')
 
 /**
  * Feeds managements
  * @method feeds
  * @return {Object} List of methods
  */
-var feeds = function () {
+module.exports = function (options) {
   /** Custom sources */
   var custom = []
+
+  /** Model to save feeds */
+  var model = null
+
   /**
    * Default sources
    * @Todo Generate detailed example
@@ -48,34 +52,37 @@ var feeds = function () {
   ]
 
   /**
-   * Get feeds sources
-   * @method feeds:get
-   * @return {Array} List of feeds sources
-   */
-  this.get = function () { return sources.concat(custom) }
-
-  /**
    * Set feeds sources
    * @method feeds:set
    * @return {Array} List of feeds sources
    */
-  this.set = function (items) {
+  var setSources = function (items) {
     if (!Array.isArray(items)) {
       items = [items]
     }
     custom = custom.concat(items)
-    return this.get()
+    return getSources()
   }
 
   /**
+   * Get feeds sources
+   * @method feeds:getSources
+   * @return {Array} List of feeds sources
+   */
+  var getSources = function () { return sources.concat(custom) }
+
+  /**
    * Save feeds content
-   * @method feeds:save
+   * @method feeds:saveFeeds
    * @return {Promise} Multiple save promises
    */
-  this.save = function (feeds) {
+  var saveFeeds = function (feeds) {
+    if (!model) {
+      throw new Error('No database model has been defined!')
+    }
     var savePromises = []
     feeds.forEach(function (feed) {
-      savePromises.push(Feeds.create(feed))
+      savePromises.push(model.create(feed))
     })
     return Promise.all(savePromises)
   }
@@ -85,17 +92,16 @@ var feeds = function () {
    * @method feeds:read
    * @return {function} Node callback { error, response}
    */
-  this.read = function (sources, options, callback) {
+  var readFeeds = function (sources, options, callback) {
     callback = arguments[arguments.length - 1]
     options = typeof arguments[1] === 'object' ? arguments[1] : {}
-
     if (arguments[0] && typeof arguments[0] !== 'function') {
       sources = Array.isArray(sources) ? sources : [sources]
     } else {
-      sources = this.get()
+      sources = getSources()
     }
 
-    var defaults = { save: false }
+    var defaults = { save: true }
     var opt = Object.assign(defaults, options)
 
     async.concat(sources, function (source, sourcecb) {
@@ -136,13 +142,22 @@ var feeds = function () {
         .catch(sourcecb)
     }, function (err, response) {
       if (opt.save) {
-        this.saveFeeds(response)
+        saveFeeds(response)
       }
-      // console.log('response -> ', response)
       callback(err, response)
     })
   }
-  return this
-}
 
-module.exports = require('universalify').fromCallback(feeds().read)
+  if (options.sources) {
+    setSources(options.sources)
+  }
+
+  if (options.model) {
+    model = options.model
+  }
+
+  return {
+    readFeeds: universalify.fromCallback(readFeeds),
+    setSources: universalify.fromCallback(setSources)
+  }
+}

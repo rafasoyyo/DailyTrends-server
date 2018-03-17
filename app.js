@@ -20,7 +20,7 @@ var config = require('./config')[env]
 mongoose.connect(config.mongoDB)
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'connection error:'))
-db.once('open', function (res) { console.log(res, config.mongoDB); console.log('Mongoose database running') })
+db.once('open', function (res) { console.log('Mongoose database running: ' + config.mongoDB) })
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'))
@@ -35,7 +35,7 @@ app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use('/', require('./routes/index'))
-app.use('/feeds', require('./routes/feeds'))
+app.use('/api/feeds', require('./routes/feeds'))
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

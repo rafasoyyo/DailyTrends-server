@@ -11,6 +11,10 @@ var router = express.Router()
 var Models = require('../models/models')
 var Feeds = Models.feeds
 
+var scraper = require('../services/scraper')({
+  model: Feeds
+})
+
 /**
  * Get list of existing feeds
  * @method GET
@@ -35,6 +39,40 @@ router.post('/', function (req, res, next) {
     .create(req.body, function (err, feedsCreated) {
       if (err) return res.status(400).send(err.toString())
       res.status(201).send(feedsCreated)
+    })
+})
+
+/**
+ * Get feed from today
+ * Use database as primary data source and newspaper as secondary data source
+ * @method GET/today
+ * @return {Array} Feeds found
+ */
+router.get('/today', function (req, res, next) {
+  // new Date(year, month, day, hours, minutes, seconds, milliseconds)
+  var now = new Date()
+  var today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  var tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+
+  Feeds
+    .find({createdAt: { $gt: today, $lt: tomorrow }})
+    .exec(function (err, feedsFound) {
+      if (err) return res.status(400).send(err.toString())
+      if (feedsFound.length) {
+        res.send(feedsFound)
+      } else {
+        var options = { save: true }
+        if (req.query.save === 'false') {
+          options.save = false
+        }
+        scraper.readFeeds(null, options)
+          .then(function (feedsRead) {
+            res.send(feedsRead)
+          })
+          .catch(function (err) {
+            res.status(400).send(err)
+          })
+      }
     })
 })
 

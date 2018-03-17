@@ -18,9 +18,32 @@ describe('Test feeds Routes', function () {
       })
   })
 
+  it('GET - should return array of feeds filtered by date', function (done) {
+    request(app)
+      .get('/feeds/today')
+      .query('save=false')
+      .expect(200)
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect('X-Powered-By', 'Express')
+      .expect(Array.isArray)
+      .end(function (err, res) {
+        if (err) return done(err) // if response is 500 or 404 & err, test case will fail
+        done()
+      })
+  })
+
   it('POST - should create a feeds', function (done) {
+    var defaultText = 'defaultText' + new Date()
     request(app)
       .post('/feeds')
+      .set('Content-Type', 'application/json')
+      .send({
+        title: defaultText,
+        body: defaultText,
+        source: defaultText,
+        publisher: defaultText,
+        image: defaultText
+      })
       .expect(201)
       .expect('Content-Type', 'application/json; charset=utf-8')
       .expect('X-Powered-By', 'Express')

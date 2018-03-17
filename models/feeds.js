@@ -14,7 +14,7 @@ var feedSchema = new Schema({
   source: { type: String, default: 'undefined' },
   publisher: { type: String, default: 'undefined' },
   image: { type: String }
-})
+}, { timestamps: true })
 
 /** Feeds model from feedSchema */
 var feedModel = mongoose.model('feeds', feedSchema)
