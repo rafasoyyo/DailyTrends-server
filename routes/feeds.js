@@ -3,11 +3,13 @@
  * Express Feeds Routes
  * @module Routes/feeds
  * @requires express
+ * @requires async
  * @requires models
+ * @requires scraper
  */
 var express = require('express')
 var router = express.Router()
-
+var async = require('async')
 var Models = require('../models/models')
 var Feeds = Models.feeds
 
@@ -67,7 +69,15 @@ router.get('/today', function (req, res, next) {
         }
         scraper.readFeeds(null, options)
           .then(function (feedsRead) {
-            res.send(feedsRead)
+            async.concatLimit(feedsRead, 10, function (feed, feddCallback) {
+              Feeds.create(feed, feddCallback)
+            }, function (err, results) {
+              if (err) {
+                res.status(400).send(err)
+              } else {
+                res.send(results)
+              }
+            })
           })
           .catch(function (err) {
             res.status(400).send(err)
@@ -97,7 +107,7 @@ router.get('/:feedId', function (req, res, next) {
  */
 router.put('/:feedId', function (req, res, next) {
   Feeds
-    .findByIdAndUpdate(req.params.feedId, req.body)
+    .findByIdAndUpdate(req.params.feedId, req.body, { new: true })
     .exec(function (err, feedUpdated) {
       if (err) return res.status(400).send(err.toString())
       res.status(202).send(feedUpdated)

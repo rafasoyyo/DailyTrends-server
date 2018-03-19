@@ -9,10 +9,10 @@ var Schema = mongoose.Schema
 
 /** Schema to define feeds */
 var feedSchema = new Schema({
-  title: { type: String, default: 'undefined' },
-  body: {type: String, default: 'undefined'},
-  source: { type: String, default: 'undefined' },
-  publisher: { type: String, default: 'undefined' },
+  title: { type: String },
+  body: { type: String },
+  source: { type: String },
+  publisher: { type: String },
   image: { type: String }
 }, { timestamps: true })
 
